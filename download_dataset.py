@@ -17,7 +17,7 @@ The code can be easily adapted to download only one of the two tasks.
 '''
 
 
-def download_l3das23_dataset(output_path, unzip=True, task=1):
+def download_l3das22_dataset(output_path, unzip=True, task=1):
     if task == 1:
         dataset_name = "l3dasteam/l3das22-task1"
     elif task == 2:
