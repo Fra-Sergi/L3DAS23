@@ -78,9 +78,9 @@ def merge_train360(part1_path, part2_path):
     info_1_path = os.path.join(part1_path, "info.csv")
     info_2_path = os.path.join(part2_path, "info.csv")
     os.rename(info_1_path, info_2_path)
-    audioimage_1_path = os.path.join(part1_path, "audio_image.csv")
-    audioimage_2_path = os.path.join(part2_path, "audio_image.csv")
-    os.rename(audioimage_1_path, audioimage_2_path)
+    #audioimage_1_path = os.path.join(part1_path, "audio_image.csv")
+    #audioimage_2_path = os.path.join(part2_path, "audio_image.csv")
+    #os.rename(audioimage_1_path, audioimage_2_path)
 
     shutil.rmtree(part1_path)
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
 
     download_l3das22_dataset(args.output_path, eval(args.unzip), task=1)
-    download_l3das22_dataset(args.output_path, eval(args.unzip), task=2)
+   # download_l3das22_dataset(args.output_path, eval(args.unzip), task=2)
 
     #merge train360 parts
     part1_path = os.path.join(args.output_path, "L3DAS22_Task1_train_360_part1","L3DAS22_Task1_train_360_part1")
@@ -108,11 +108,11 @@ if __name__ == '__main__':
 
     #create dir tree
     task1_path = os.path.join(args.output_path, "Task1")
-    task2_path = os.path.join(args.output_path, "Task2")
+    #task2_path = os.path.join(args.output_path, "Task2")
     if not os.path.exists(task1_path):
         os.makedirs(task1_path)
-    if not os.path.exists(task2_path):
-        os.makedirs(task2_path)
+    #if not os.path.exists(task2_path):
+        #os.makedirs(task2_path)
 
     os.rename(os.path.join(args.output_path, "L3DAS22_Task1_train_360_part2","L3DAS22_Task1_train_360_part2"),
               os.path.join(task1_path, "L3DAS22_Task1_train360")
@@ -123,22 +123,22 @@ if __name__ == '__main__':
     os.rename(os.path.join(args.output_path, "L3DAS22_Task1_dev","L3DAS22_Task1_dev"),
               os.path.join(task1_path, "L3DAS22_Task1_dev")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS22_Task1_images","L3DAS22_Task1_images"),
-              os.path.join(task1_path, "L3DAS22_Task1_images")
-              )
-    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_train","L3DAS22_Task2_train"),
-              os.path.join(task2_path, "L3DAS22_Task2_train")
-              )
-    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_dev","L3DAS22_Task2_dev"),
-              os.path.join(task2_path, "L3DAS22_Task2_dev")
-              )
-    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_images","L3DAS22_Task2_images"),
-              os.path.join(task2_path, "L3DAS22_Task2_images")
-              )
+    #os.rename(os.path.join(args.output_path, "L3DAS22_Task1_images","L3DAS22_Task1_images"),
+              #os.path.join(task1_path, "L3DAS22_Task1_images")
+              #)
+    #os.rename(os.path.join(args.output_path, "L3DAS22_Task2_train","L3DAS22_Task2_train"),
+              #os.path.join(task2_path, "L3DAS22_Task2_train")
+              #)
+   # os.rename(os.path.join(args.output_path, "L3DAS22_Task2_dev","L3DAS22_Task2_dev"),
+              #os.path.join(task2_path, "L3DAS22_Task2_dev")
+              #)
+    #os.rename(os.path.join(args.output_path, "L3DAS22_Task2_images","L3DAS22_Task2_images"),
+              #os.path.join(task2_path, "L3DAS22_Task2_images")
+              #)
 
     f = os.listdir(args.output_path)
     f.remove("Task1")
-    f.remove("Task2")
+    #f.remove("Task2")
     f = [os.path.join(args.output_path, i) for i in f]
     for i in f:
         shutil.rmtree(i)
