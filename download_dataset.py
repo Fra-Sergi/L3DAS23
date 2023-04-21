@@ -19,9 +19,9 @@ The code can be easily adapted to download only one of the two tasks.
 
 def download_l3das23_dataset(output_path, unzip=True, task=1):
     if task == 1:
-        dataset_name = "l3dasteam/l3das23-task1"
+        dataset_name = "l3dasteam/l3das22-task1"
     elif task == 2:
-        dataset_name = "l3dasteam/l3das23-challenge"
+        dataset_name = "l3dasteam/l3das22-challenge"
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     st = "kaggle datasets download " + dataset_name + " -p " + output_path + " --force"
@@ -59,14 +59,14 @@ def merge_train360(part1_path, part2_path):
     print ("Merging task1 train360 sound data")
     with tqdm(total=len(data1_c)) as pbar:
         for source in data1_c:
-            target = source.replace("L3DAS23_Task1_train_360_part1", "L3DAS23_Task1_train_360_part2")
+            target = source.replace("L3DAS22_Task1_train_360_part1", "L3DAS22_Task1_train_360_part2")
             os.rename(source, target)
             pbar.update(1)
 
     print ("Merging task1 train360 labels data")
     with tqdm(total=len(data1_c)) as pbar:
         for source in labels1_c:
-            target = source.replace("L3DAS23_Task1_train_360_part1", "L3DAS23_Task1_train_360_part2")
+            target = source.replace("L3DAS22_Task1_train_360_part1", "L3DAS22_Task1_train_360_part2")
             os.rename(source, target)
             pbar.update(1)
 
@@ -98,12 +98,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 
-    download_l3das23_dataset(args.output_path, eval(args.unzip), task=1)
-    download_l3das23_dataset(args.output_path, eval(args.unzip), task=2)
+    download_l3das22_dataset(args.output_path, eval(args.unzip), task=1)
+    download_l3das22_dataset(args.output_path, eval(args.unzip), task=2)
 
     #merge train360 parts
-    part1_path = os.path.join(args.output_path, "L3DAS23_Task1_train_360_part1","L3DAS23_Task1_train_360_part1")
-    part2_path = os.path.join(args.output_path, "L3DAS23_Task1_train_360_part2","L3DAS23_Task1_train_360_part2")
+    part1_path = os.path.join(args.output_path, "L3DAS22_Task1_train_360_part1","L3DAS22_Task1_train_360_part1")
+    part2_path = os.path.join(args.output_path, "L3DAS22_Task1_train_360_part2","L3DAS22_Task1_train_360_part2")
     merge_train360(part1_path, part2_path)
 
     #create dir tree
@@ -114,26 +114,26 @@ if __name__ == '__main__':
     if not os.path.exists(task2_path):
         os.makedirs(task2_path)
 
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task1_train_360_part2","L3DAS23_Task1_train_360_part2"),
-              os.path.join(task1_path, "L3DAS23_Task1_train360")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task1_train_360_part2","L3DAS22_Task1_train_360_part2"),
+              os.path.join(task1_path, "L3DAS22_Task1_train360")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task1_train_100","L3DAS23_Task1_train_100"),
-              os.path.join(task1_path, "L3DAS23_Task1_train100")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task1_train_100","L3DAS22_Task1_train_100"),
+              os.path.join(task1_path, "L3DAS22_Task1_train100")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task1_dev","L3DAS23_Task1_dev"),
-              os.path.join(task1_path, "L3DAS23_Task1_dev")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task1_dev","L3DAS22_Task1_dev"),
+              os.path.join(task1_path, "L3DAS22_Task1_dev")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task1_images","L3DAS23_Task1_images"),
-              os.path.join(task1_path, "L3DAS23_Task1_images")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task1_images","L3DAS22_Task1_images"),
+              os.path.join(task1_path, "L3DAS22_Task1_images")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task2_train","L3DAS23_Task2_train"),
-              os.path.join(task2_path, "L3DAS23_Task2_train")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_train","L3DAS22_Task2_train"),
+              os.path.join(task2_path, "L3DAS22_Task2_train")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task2_dev","L3DAS23_Task2_dev"),
-              os.path.join(task2_path, "L3DAS23_Task2_dev")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_dev","L3DAS22_Task2_dev"),
+              os.path.join(task2_path, "L3DAS22_Task2_dev")
               )
-    os.rename(os.path.join(args.output_path, "L3DAS23_Task2_images","L3DAS23_Task2_images"),
-              os.path.join(task2_path, "L3DAS23_Task2_images")
+    os.rename(os.path.join(args.output_path, "L3DAS22_Task2_images","L3DAS22_Task2_images"),
+              os.path.join(task2_path, "L3DAS22_Task2_images")
               )
 
     f = os.listdir(args.output_path)
