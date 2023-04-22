@@ -132,16 +132,16 @@ def preprocessing_task1(args):
         return predictors, predictors_path, target
 
     #process all required folders
-    predictors_test, predictors_path_test, target_test = process_folder('L3DAS23_Task1_dev', args)
+    predictors_test, predictors_path_test, target_test = process_folder('L3DAS22_Task1_dev', args)
 
 
     if args.training_set == 'train100':
-        predictors_train, predictors_path_train, target_train = process_folder('L3DAS23_Task1_train100', args)
+        predictors_train, predictors_path_train, target_train = process_folder('L3DAS22_Task1_train100', args)
     elif args.training_set == 'train360':
-        predictors_train, predictors_path_train, target_train = process_folder('L3DAS23_Task1_train360', args)
+        predictors_train, predictors_path_train, target_train = process_folder('L3DAS22_Task1_train360', args)
     elif args.training_set == 'both':
-        predictors_train100, predictors_path_train100, target_train100 = process_folder('L3DAS23_Task1_train100', args)
-        predictors_train360, predictors_path_train360, target_train360 = process_folder('L3DAS23_Task1_train360', args)
+        predictors_train100, predictors_path_train100, target_train100 = process_folder('L3DAS22_Task1_train100', args)
+        predictors_train360, predictors_path_train360, target_train360 = process_folder('L3DAS22_Task1_train360', args)
         predictors_train = predictors_train100 + predictors_train360
         predictors_path_train = predictors_path_train100 + predictors_path_train360
         target_train = target_train100 + target_train360
@@ -175,7 +175,7 @@ def preprocessing_task1(args):
     #generate also a test set matrix with full-length samples, just for the evaluation
     print('processing uncut test set')
     args.pad_length = max_file_length_task1
-    predictors_test_uncut, predictors_path_test_uncut, target_test_uncut = process_folder('L3DAS23_Task1_dev', args)
+    predictors_test_uncut, predictors_path_test_uncut, target_test_uncut = process_folder('L3DAS22_Task1_dev', args)
     predictors_test_uncut = [predictors_test_uncut, predictors_path_test_uncut]
     print('Saving files')
     with open(os.path.join(args.output_path,'task1_predictors_test_uncut.pkl'), 'wb') as f:
@@ -325,10 +325,10 @@ def preprocessing_task2(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #i/o
-    mnt_path = '/mnt/media/christian/Datasets/'
+    mnt_path = '/content/gdrive/MyDrive/project_folder/L3DAS23/'
     parser.add_argument('--task', type=int,
                         help='task to be pre-processed')
-    parser.add_argument('--audio_visual', type=bool, default=True,
+    parser.add_argument('--audio_only', type=bool, default=True,
                         help='whether to consider images or not (audio-visual track or audio-only track)')
     parser.add_argument('--input_path', type=str, default=mnt_path+'DATASETS/Task1',
                         help='directory where the dataset has been downloaded')
