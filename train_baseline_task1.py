@@ -15,6 +15,7 @@ from torchvision import transforms
 
 from models.FaSNet import FaSNet_origin, FaSNet_TAC
 from models.MMUB import MIMO_UNet_Beamforming, audiovisual_MIMO_UNet_Beamforming
+from models.Sepformer import Sepformer
 from utility_functions import load_model, save_model
 from custom_dataset import CustomAudioVisualDataset
 
