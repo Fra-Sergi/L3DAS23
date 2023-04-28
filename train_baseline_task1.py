@@ -151,14 +151,6 @@ def main(args):
         model = audiovisual_MIMO_UNet_Beamforming(fft_size=args.fft_size,
                                       hop_size=args.hop_size,
                                       input_channel=args.input_channel)
-    elif args.architecture["model"]["type"] == "sepformer":
-        model = Sepformer(N=config["model"]["sepformer"]["N"],
-                            C=config["model"]["sepformer"]["C"],
-                            L=config["model"]["sepformer"]["L"],
-                            H=config["model"]["sepformer"]["H"],
-                            K=config["model"]["sepformer"]["K"],
-                            Global_B=config["model"]["sepformer"]["Global_B"],
-                            Local_B=config["model"]["sepformer"]["Local_B"])
     if args.use_cuda:
         print("Moving model to gpu")
     model = model.to(device)
