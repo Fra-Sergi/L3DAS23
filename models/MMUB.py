@@ -163,6 +163,8 @@ class MIMO_UNet_Beamforming(nn.Module):
         features = torch.cat((real_features, imag_features), 2)
 
         out = features
+        print("Number of dimensions of out=features: ", out.ndim)
+        print("Shape of out=features:", out.shape)
         encoder_out = []
         for idx, layer in enumerate(self.encoder):
             out = self.encode_padding_same(out, self.kernel[idx])
