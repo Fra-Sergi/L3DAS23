@@ -193,9 +193,13 @@ class MIMO_UNet_Beamforming(nn.Module):
         est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
 
         # shape: [B, C, F, T]
+        print("Number of dimensions of est_speech_stft_1: ", est_speech_stft.ndim)
+        print("Shape of dimensions of est_speech_stft_1:", est_speech_stft.shape)
         est_speech_stft = torch.sum(est_speech_stft, 1)
         batch_size, frequency, frame = est_speech_stft.size()
         est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
+        print("Number of dimensions of est_speech_stft_2: ", est_speech_stft.ndim)
+        print("Shape of dimensions of est_speech_stft_2:", est_speech_stft.shape)
 
         # shape: [B, S]
         est_speech = torch.istft(
@@ -205,6 +209,8 @@ class MIMO_UNet_Beamforming(nn.Module):
                         self.win_size,
                         torch.hann_window(self.win_size).to(device))
         # shape: [B, 1, S]
+        print("Number of dimensions of est_speech: ", est_speech.ndim)
+        print("Shape of dimensions of est_speech:", est_speech.shape)
         return torch.unsqueeze(est_speech, 1)
 
 
