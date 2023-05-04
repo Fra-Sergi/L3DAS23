@@ -163,8 +163,8 @@ class MIMO_UNet_Beamforming(nn.Module):
         features = torch.cat((real_features, imag_features), 2)
 
         out = features
-        print("Number of dimensions of out=features: ", out.ndim)
-        print("Shape of out=features:", out.shape)
+        #print("Number of dimensions of out=features: ", out.ndim)
+        #print("Shape of out=features:", out.shape)
         encoder_out = []
         for idx, layer in enumerate(self.encoder):
             out = self.encode_padding_same(out, self.kernel[idx])
@@ -453,6 +453,8 @@ class audiovisual_MIMO_UNet_Beamforming(nn.Module):
         est_speech_stft = torch.sum(est_speech_stft, 1)
         batch_size, frequency, frame = est_speech_stft.size()
         est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
+        print("Number of dimensions of est_speech_stft: ", est_speech_stft.ndim)
+        print("Shape of dimensions of est_speech_stft:", est_speech_stft.shape)
 
         # shape: [B, S]
         est_speech = torch.istft(
@@ -462,6 +464,8 @@ class audiovisual_MIMO_UNet_Beamforming(nn.Module):
                         self.win_size,
                         torch.hann_window(self.win_size).to(device))
         # shape: [B, 1, S]
+        print("Number of dimensions of est_speech: ", est_speech.ndim)
+        print("Shape of dimensions of est_speech:", est_speech.shape)
         return torch.unsqueeze(est_speech, 1)
 
 if __name__ == '__main__':
