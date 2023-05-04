@@ -2,7 +2,7 @@ jiwer==2.5.1
 librosa
 numpy
 pandas
-pystoi==0.3.3
+pystoi
 scipy==1.6.2
 soundfile==0.10.3.post1
 torch==1.13.1
