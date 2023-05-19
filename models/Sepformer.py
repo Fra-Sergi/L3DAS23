@@ -6,10 +6,10 @@ from torch.autograd import Variable
 import math
 import torch.nn.functional as F
 
+
 class Encoder(nn.Module):
 
     def __init__(self, L, N):
-
         """
             Apprendimento di una rappresentazione simile a STFT。
             Lo stride factor della convoluzione ha un impatto significativo su prestazioni, velocità e memoria del modello.
@@ -24,14 +24,13 @@ class Encoder(nn.Module):
         self.Conv1d = nn.Conv1d(in_channels=1,
                                 out_channels=N,
                                 kernel_size=L,
-                                stride=L//2,
+                                stride=L // 2,
                                 padding=0,
                                 bias=False)
 
         self.ReLU = nn.ReLU()
 
     def forward(self, x):
-
         x = self.Conv1d(x)
 
         x = self.ReLU(x)
@@ -42,7 +41,6 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
 
     def __init__(self, L, N):
-
         super(Decoder, self).__init__()
 
         self.L = L
@@ -52,15 +50,32 @@ class Decoder(nn.Module):
         self.ConvTranspose1d = nn.ConvTranspose1d(in_channels=N,
                                                   out_channels=1,
                                                   kernel_size=L,
-                                                  stride=L//2,
+                                                  stride=L // 2,
                                                   padding=0,
                                                   bias=False)
 
     def forward(self, x):
-
         x = self.ConvTranspose1d(x)
 
         return x
+
+
+class PatchEmbedding(nn.Module):
+    def __init__(self, img_size=512, patch_size=16, num_hiddens=512):
+        super().__init__()
+
+        def _make_tuple(x):
+            if not isinstance(x, (list, tuple)):
+                return (x, x)
+            return x
+
+        img_size, patch_size = _make_tuple(img_size), _make_tuple(patch_size)
+        self.num_patches = (img_size[0] // patch_size[0]) * (img_size[1] // patch_size[1])
+        self.conv = nn.Conv2d(in_channels=1, out_channels=num_hiddens, kernel_size=(512, 16), stride=8)
+
+    def forward(self, X):
+        # output shape: (batch size, no. of patches, no. of channels)
+        return self.conv(X).transpose(1, 2).view(6, 4, 512, 74)
 
 
 class TransformerEncoderLayer(Module):
@@ -86,7 +101,6 @@ class TransformerEncoderLayer(Module):
     """
 
     def __init__(self, d_model, nhead, dropout=0):
-
         super(TransformerEncoderLayer, self).__init__()
 
         self.LayerNorm1 = nn.LayerNorm(normalized_shape=d_model)
@@ -97,15 +111,14 @@ class TransformerEncoderLayer(Module):
 
         self.LayerNorm2 = nn.LayerNorm(normalized_shape=d_model)
 
-        self.FeedForward = nn.Sequential(nn.Linear(d_model, d_model*2*2),
+        self.FeedForward = nn.Sequential(nn.Linear(d_model, d_model * 2 * 2),
                                          nn.ReLU(),
                                          nn.Dropout(p=dropout),
-                                         nn.Linear(d_model*2*2, d_model))
+                                         nn.Linear(d_model * 2 * 2, d_model))
 
         self.Dropout2 = nn.Dropout(p=dropout)
 
     def forward(self, z):
-
         z1 = self.LayerNorm1(z)
 
         z2 = self.self_attn(z1, z1, z1, attn_mask=None, key_padding_mask=None)[0]
@@ -122,7 +135,6 @@ class TransformerEncoderLayer(Module):
 class Positional_Encoding(nn.Module):
 
     def __init__(self, d_model, dropout=0.1, max_len=5000):
-
         super(Positional_Encoding, self).__init__()
 
         self.dropout = nn.Dropout(p=dropout)
@@ -138,7 +150,6 @@ class Positional_Encoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-
         x = x.permute(0, 2, 1).contiguous()
 
         # x is seq_len, batch, channels
@@ -162,6 +173,13 @@ class DPTBlock(nn.Module):
 
         self.Local_B = Local_B
 
+        self.channel_PositionalEncoding = Positional_Encoding(d_model=input_size, max_len=32000)
+        self.channel_transformer = nn.ModuleList([])
+        for i in range(self.Local_B):
+            self.channel_transformer.append(TransformerEncoderLayer(d_model=input_size,
+                                                                    nhead=nHead,
+                                                                    dropout=0.1))
+
         self.intra_PositionalEncoding = Positional_Encoding(d_model=input_size, max_len=32000)
         self.intra_transformer = nn.ModuleList([])
         for i in range(self.Local_B):
@@ -180,8 +198,18 @@ class DPTBlock(nn.Module):
 
         B, N, K, P = z.shape
 
+        # interchannel DPT
+        prova_z = z.permute(2, 3, 0, 1).contiguous().view(K * P, B, N)
+        prova_z1 = self.channel_PositionalEncoding(prova_z)
+
+        for i in range(self.Local_B):
+            prova_z1 = self.channel_transformer[i](prova_z1.permute(1, 0, 2).contiguous()).permute(1, 0, 2).contiguous()
+
+        prova_f = prova_z1 + prova_z
+        prova_output = prova_f.view(K, P, B, N).permute(2, 3, 0, 1).contiguous()
+
         # intra DPT
-        row_z = z.permute(0, 3, 2, 1).contiguous().view(B*P, K, N)
+        row_z = prova_output.permute(0, 3, 2, 1).contiguous().view(B * P, K, N)
         row_z1 = self.intra_PositionalEncoding(row_z)
 
         for i in range(self.Local_B):
@@ -191,7 +219,7 @@ class DPTBlock(nn.Module):
         row_output = row_f.view(B, P, K, N).permute(0, 3, 2, 1).contiguous()
 
         # inter DPT
-        col_z = row_output.permute(0, 2, 3, 1).contiguous().view(B*K, P, N)
+        col_z = row_output.permute(0, 2, 3, 1).contiguous().view(B * K, P, N)
         col_z1 = self.inter_PositionalEncoding(col_z)
 
         for i in range(self.Local_B):
@@ -205,16 +233,17 @@ class DPTBlock(nn.Module):
 
 class Separator(nn.Module):
 
-    def __init__(self, N, C, H, K, Global_B, Local_B):
+    def __init__(self, N, H, Global_B, Local_B):
 
         super(Separator, self).__init__()
 
-        self.N = N
-        self.C = C
-        self.K = K
+        # self.N = N
+        # self.C = C
+        # self.K = K
         self.Global_B = Global_B  # 全局循环次数
         self.Local_B = Local_B  # 局部循环次数
 
+        self.patchEmbedding = PatchEmbedding()
         self.LayerNorm = nn.LayerNorm(self.N)
         self.Linear1 = nn.Linear(in_features=self.N, out_features=self.N, bias=None)
 
@@ -222,34 +251,34 @@ class Separator(nn.Module):
         for i in range(self.Global_B):
             self.SepFormer.append(DPTBlock(N, H, self.Local_B))
 
-        self.PReLU = nn.PReLU()
-        self.Conv2d = nn.Conv2d(N, N*C, kernel_size=1)
+        # self.PReLU = nn.PReLU()
+        # self.Conv2d = nn.Conv2d(N, N * C, kernel_size=1)
 
-        self.output = nn.Sequential(nn.Conv1d(N, N, 1), nn.Tanh())
-        self.output_gate = nn.Sequential(nn.Conv1d(N, N, 1), nn.Sigmoid())
+        # self.output = nn.Sequential(nn.Conv1d(N, N, 1), nn.Tanh())
+        # self.output_gate = nn.Sequential(nn.Conv1d(N, N, 1), nn.Sigmoid())
 
     def forward(self, x):
 
         # Norm + Linear
-        x = self.LayerNorm(x.permute(0, 2, 1).contiguous())  # [B, C, L] => [B, L, C]
-        x = self.Linear1(x).permute(0, 2, 1).contiguous()  # [B, L, C] => [B, C, L]
+        # x = self.LayerNorm(x.permute(0, 2, 1).contiguous())  # [B, C, L] => [B, L, C]
+        # x = self.Linear1(x).permute(0, 2, 1).contiguous()  # [B, L, C] => [B, C, L]
 
         # Chunking
-        out, gap = self.split_feature(x, self.K)  # [B, C, L] => [B, C, K, S]
-
+        # out, gap = self.split_feature(x, self.K)  # [B, C, L] => [B, C, K, S]
+        out = self.patchEmbedding(x)  # [B, 4, 512, 600] => [B, 4, 512, 74]
         # SepFormer
         for i in range(self.Global_B):
             out = self.SepFormer[i](out)  # [B, C, K, S]
 
-        out = self.Conv2d(self.PReLU(out))  # [B, N, K, S] -> [B, N*C, K, S], torch.Size([1, 128, 250, 130])
+        # out = self.Conv2d(self.PReLU(out))  # [B, N, K, S] -> [B, N*C, K, S], torch.Size([1, 128, 250, 130])
 
-        B, _, K, S = out.shape
-        out = out.view(B, -1, self.C, K, S).permute(0, 2, 1, 3, 4).contiguous()  # [B, N*C, K, S] -> [B, N, C, K, S]
-        out = out.view(B*self.C, -1, K, S)
-        out = self.merge_feature(out, gap)  # [B*C, N, K, S]  -> [B*C, N, L]
+        # B, _, K, S = out.shape
+        # out = out.view(B, -1, self.C, K, S).permute(0, 2, 1, 3, 4).contiguous()  # [B, N*C, K, S] -> [B, N, C, K, S]
+        # out = out.view(B * self.C, -1, K, S)
+        # out = self.merge_feature(out, gap)  # [B*C, N, K, S]  -> [B*C, N, L]
 
-        out = F.relu(self.output(out)*self.output_gate(out))
-        out = F.relu(out)
+        # out = F.relu(self.output(out) * self.output_gate(out))
+        # out = F.relu(out)
 
         return out
 
@@ -283,7 +312,8 @@ class Separator(nn.Module):
 
         segments1 = input[:, :, :-segment_stride].contiguous().view(batch_size, dim, -1, segment_size)
         segments2 = input[:, :, segment_stride:].contiguous().view(batch_size, dim, -1, segment_size)
-        segments = torch.cat([segments1, segments2], 3).view(batch_size, dim, -1, segment_size).transpose(2, 3).contiguous()
+        segments = torch.cat([segments1, segments2], 3).view(batch_size, dim, -1, segment_size).transpose(2,
+                                                                                                          3).contiguous()
 
         return segments, rest
 
@@ -381,7 +411,7 @@ class Sepformer(nn.Module):
             pad = Variable(torch.zeros(batch_size, 1, rest)).type(input.type())
             input = torch.cat([input, pad], dim=2)
 
-        pad_aux = Variable(torch.zeros(batch_size, 1, self.L//2)).type(input.type())
+        pad_aux = Variable(torch.zeros(batch_size, 1, self.L // 2)).type(input.type())
 
         input = torch.cat([pad_aux, input, pad_aux], 2)
 
@@ -431,20 +461,20 @@ class Sepformer(nn.Module):
 
 class MIMO(nn.Module):
     def __init__(self,
-                fft_size=512,
-                hop_size=128,
-                N=64,
-                C=2,
-                L=4,
-                H=4,
-                K=250,
-                Global_B=2,
-                Local_B=4
-                #input_channel=4, # the channel number of input audio
-                #unet_channel=[32,32,32,64,64,96,96,96,128,256],
-                #kernel_size=[(7,1),(1,7),(8,6),(7,6),(6,5),(5,5),(6,3),(5,3),(6,3),(5,3)],
-                #stride=[(1,1),(1,1),(2,2),(1,1),(2,2),(1,1),(2,2),(1,1),(2,1),(1,1)]
-                ):
+                 fft_size=512,
+                 hop_size=128,
+                 N=512,
+                 # C=2,
+                 # L=4,
+                 H=4,
+                 # K=250,
+                 Global_B=2,
+                 Local_B=4,
+                 input_channel=4,  # the channel number of input audio
+                 # unet_channel=[32,32,32,64,64,96,96,96,128,256],
+                 # kernel_size=[(7,1),(1,7),(8,6),(7,6),(6,5),(5,5),(6,3),(5,3),(6,3),(5,3)],
+                 # stride=[(1,1),(1,1),(2,2),(1,1),(2,2),(1,1),(2,2),(1,1),(2,1),(1,1)]
+                 ):
         super(MIMO, self).__init__()
         self.fft_size = fft_size
         self.hop_size = hop_size
@@ -458,43 +488,43 @@ class MIMO(nn.Module):
         self.K = K  # Number of repeats
         self.Global_B = Global_B  # 全局循环次数
         self.Local_B = Local_B  # 局部循环次数
-        self.separator = Separator(self.N, self.C, self.H, self.K, self.Global_B, self.Local_B)
+        self.separator = Separator(self.H, self.Global_B, self.Local_B)
 
-        #layer_number = len(unet_channel)
-        #kernel_number = len(kernel_size)
-        #stride_number = len(stride)
-        #assert layer_number==kernel_number==stride_number
+        # layer_number = len(unet_channel)
+        # kernel_number = len(kernel_size)
+        # stride_number = len(stride)
+        # assert layer_number==kernel_number==stride_number
 
-        #self.kernel = kernel_size
-        #self.stride = stride
+        # self.kernel = kernel_size
+        # self.stride = stride
 
         # encoder setting
-        #self.encoder = nn.ModuleList()
-        #self.encoder_channel = [input_channel] + unet_channel
+        # self.encoder = nn.ModuleList()
+        # self.encoder_channel = [input_channel] + unet_channel
 
         # decoder setting
-        #self.decoder = nn.ModuleList()
-        #self.decoder_outchannel = unet_channel
-        #self.decoder_inchannel = list(map(lambda x:x[0] + x[1] ,zip(unet_channel[1:] + [0], unet_channel)))
+        # self.decoder = nn.ModuleList()
+        # self.decoder_outchannel = unet_channel
+        # self.decoder_inchannel = list(map(lambda x:x[0] + x[1] ,zip(unet_channel[1:] + [0], unet_channel)))
 
-        #self.conv2d = nn.Conv2d(self.decoder_outchannel[0], input_channel, 1, 1)
-        #self.linear = nn.Linear(self.valid_freq * 2, self.valid_freq * 2)
+        # self.conv2d = nn.Conv2d(self.decoder_outchannel[0], input_channel, 1, 1)
+        # self.linear = nn.Linear(self.valid_freq * 2, self.valid_freq * 2)
 
-        #for idx in range(layer_number):
-         #   self.encoder.append(
-          #      nn.Sequential(
-           #         nn.Conv2d(
-            #            self.encoder_channel[idx],
-            #            self.encoder_channel[idx+1],
-            #            self.kernel[idx],
-            #            self.stride[idx],
-            #        ),
-            #        nn.BatchNorm2d(self.encoder_channel[idx+1]),
-            #        nn.LeakyReLU(0.3)
-            #    )
-            #)
+        # for idx in range(layer_number):
+        #   self.encoder.append(
+        #      nn.Sequential(
+        #         nn.Conv2d(
+        #            self.encoder_channel[idx],
+        #            self.encoder_channel[idx+1],
+        #            self.kernel[idx],
+        #            self.stride[idx],
+        #        ),
+        #        nn.BatchNorm2d(self.encoder_channel[idx+1]),
+        #        nn.LeakyReLU(0.3)
+        #    )
+        # )
 
-        #for idx in range(layer_number):
+        # for idx in range(layer_number):
         #    self.decoder.append(
         #        nn.Sequential(
         #            nn.ConvTranspose2d(
@@ -516,25 +546,25 @@ class MIMO(nn.Module):
         for idx in range(batch_size):
             # shape: [C, F, T, 2]
             features_batch = torch.stft(
-                                inputs[idx, ...],
-                                self.fft_size,
-                                self.hop_size,
-                                self.win_size,
-                                torch.hann_window(self.win_size).to(device),
-                                pad_mode='constant',
-                                onesided=True,
-                                return_complex=False)
+                inputs[idx, ...],
+                self.fft_size,
+                self.hop_size,
+                self.win_size,
+                torch.hann_window(self.win_size).to(device),
+                pad_mode='constant',
+                onesided=True,
+                return_complex=False)
             features.append(features_batch)
 
         # shape: [B, C, F, T, 2]
         features = torch.stack(features, 0)
-        features = features[:,:,:self.valid_freq,:,:]
+        features = features[:, :, :self.valid_freq, :, :]
         real_features = features[..., 0]
         imag_features = features[..., 1]
 
         return real_features, imag_features
 
-    #def encode_padding_size(self, kernel_size):
+    # def encode_padding_size(self, kernel_size):
     #    k_f, k_t = kernel_size
     #    p_t_s = int(k_t / 2)
     #    p_f_s = int(k_f / 2)
@@ -549,7 +579,7 @@ class MIMO(nn.Module):
 
     #    return (p_t_0, p_t_1, p_f_0, p_f_1)
 
-    #def decode_padding_size(self, in_size, target_size):
+    # def decode_padding_size(self, in_size, target_size):
     #    i_f, i_t = in_size
     #    t_f, t_t = target_size
     #    p_t_s = int(abs(t_t - i_t) / 2)
@@ -565,25 +595,25 @@ class MIMO(nn.Module):
 
     #    return (p_t_0, p_t_1, p_f_0, p_f_1)
 
-    #def encode_padding_same(self, features, kernel_size):
+    # def encode_padding_same(self, features, kernel_size):
     #    p_t_0, p_t_1, p_f_0, p_f_1 = self.encode_padding_size(kernel_size)
 
     #    features = F.pad(features, (p_t_0, p_t_1, p_f_0, p_f_1))
 
     #    return features
 
-    #def decode_padding_same(self, features, encoder_features, stride):
-        # shape: [B, C, F, T]
+    # def decode_padding_same(self, features, encoder_features, stride):
+    # shape: [B, C, F, T]
     #    _, _, f, t = features.size()
     #    _, _, ef, et = encoder_features.size()
 
-        # shape: [F, T]
+    # shape: [F, T]
     #    sf, st = stride
     #    tf, tt = (int(ef * sf), int(et * st))
 
     #    p_t_0, p_t_1, p_f_0, p_f_1 = self.decode_padding_size((f, t), (tf, tt))
 
-        # shape: [B, C, F, T]
+    # shape: [B, C, F, T]
     #    if (p_t_0 != 0) or (p_t_1 != 0):
     #        features = features[:, :, :, p_t_0:-p_t_1]
     #    if (p_f_0 != 0) or (p_f_1 != 0):
@@ -598,63 +628,72 @@ class MIMO(nn.Module):
         features = torch.cat((real_features, imag_features), 2)
 
         out = features
-        #encoder_out = []
-        #for idx, layer in enumerate(self.encoder):
+        masks = self.separator(out)
+        # encoder_out = []
+        # for idx, layer in enumerate(self.encoder):
         #    out = self.encode_padding_same(out, self.kernel[idx])
         #    out = layer(out)
         #    encoder_out.append(out)
 
-        #out = encoder_out[-1]
-        #for idx, layer in enumerate(self.decoder):
+        # out = encoder_out[-1]
+        # for idx, layer in enumerate(self.decoder):
         #    if idx != 0:
         #        out = torch.cat((out, encoder_out[-1-idx]), 1)
         #    out = layer(out)
         #    out = self.decode_padding_same(out, encoder_out[-1-idx], self.stride[-1-idx])
 
-        #out = self.conv2d(out)
+        # out = self.conv2d(out)
         # shape: [B, C, T, F*2]
-        #out = out.permute(0,1,3,2)
-        #out = self.linear(out)
+        # out = out.permute(0,1,3,2)
+        # out = self.linear(out)
         # shape: [B, C, F*2, T]
-        #out = out.permute(0,1,3,2)
+        # out = out.permute(0,1,3,2)
 
-        #real_mask = out[:,:,:self.valid_freq,:]
-        #imag_mask = out[:,:,self.valid_freq:,:]
+        # real_mask = out[:,:,:self.valid_freq,:]
+        # imag_mask = out[:,:,self.valid_freq:,:]
 
-        #est_speech_real = torch.mul(real_features, real_mask) - torch.mul(imag_features, imag_mask)
-        #est_speech_imag = torch.mul(real_features, imag_mask) + torch.mul(imag_features, real_mask)
-        #est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
+        # est_speech_real = torch.mul(real_features, real_mask) - torch.mul(imag_features, imag_mask)
+        # est_speech_imag = torch.mul(real_features, imag_mask) + torch.mul(imag_features, real_mask)
+        # est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
 
+        est_speech_stft = torch.mul(out, masks)
         # shape: [B, C, F, T]
-        #est_speech_stft = torch.sum(est_speech_stft, 1)
-        #batch_size, frequency, frame = est_speech_stft.size()
-        #est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
+        est_speech_stft = torch.sum(est_speech_stft, 1)
+        batch_size, frequency, frame = est_speech_stft.size()
+        est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
 
         # shape: [B, S]
         est_speech = torch.istft(
-                        est_speech_stft,
-                        self.fft_size,
-                        self.hop_size,
-                        self.win_size,
-                        torch.hann_window(self.win_size).to(device))
+            est_speech_stft,
+            self.fft_size,
+            self.hop_size,
+            self.win_size,
+            torch.hann_window(self.win_size).to(device))
         # shape: [B, 1, S]
         return torch.unsqueeze(est_speech, 1)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    '''
+    The frame number input to the model must be a multiple of 8, here it's 600.
+    Because the torch.stft pads 4 extra frames based on our configurations, the
+    frame number of the signal is 596 actually, ie. the duration of the signal
+    is 4.792 seconds(76672 sample), while the fft_size is 512, hop_size is 128,
+    and the sample_rate is 16000.
+    The frequency bin input to the model must be a multiple of 16, here it's 256.
+    '''
+    frames_num = 600
+    fft_size = 512
+    hop_size = 128
+    batch_size = 6
+    audio_channel = 4
+    length = int((frames_num - 1) * hop_size + fft_size - 4 * hop_size)  # 4.792 seconds
+    inputs = torch.rand(batch_size, audio_channel, length)
 
-    x = torch.rand(1, 32000)
+    model = MIMO()
+    out = model(inputs, 'cpu')
+    print('input size:', inputs.size())
+    print('out size:', out.size())
 
-    model = Sepformer(N=128,
-                      C=2,
-                      L=2,
-                      H=8,
-                      K=250,
-                      Global_B=1,
-                      Local_B=1)
-
-    print("{:.3f} million".format(sum([param.nelement() for param in model.parameters()]) / 1e6))
-
-    y = model(x)
-
-    print(y.shape)
+    model_params = sum([np.prod(p.size()) for p in model.parameters()])
+    print('Total parameters: ' + str(model_params))

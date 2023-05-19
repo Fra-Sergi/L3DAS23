@@ -15,7 +15,7 @@ from torchvision import transforms
 
 from models.FaSNet import FaSNet_origin, FaSNet_TAC
 from models.MMUB import MIMO_UNet_Beamforming, audiovisual_MIMO_UNet_Beamforming
-from models.Sepformer import Sepformer
+from models.Sepformer import MIMO
 from utility_functions import load_model, save_model
 from custom_dataset import CustomAudioVisualDataset
 
@@ -151,6 +151,10 @@ def main(args):
         model = audiovisual_MIMO_UNet_Beamforming(fft_size=args.fft_size,
                                       hop_size=args.hop_size,
                                       input_channel=args.input_channel)
+    elif args.architecture == 'audiovisual_MIMO_Unet_Beamforming':
+        model = MIMO(fft_size=args.fft_size,
+                     hop_size=args.hop_size,
+                     input_channel=args.input_channel)
     if args.use_cuda:
         print("Moving model to gpu")
     model = model.to(device)
@@ -313,7 +317,7 @@ if __name__ == '__main__':
                         help="L1 or L2")
     #model parameters
     # Training includes images whenever 'audiovisual' appears in the architecture name
-    parser.add_argument('--architecture', type=str, default='MIMO_UNet_Beamforming',
+    parser.add_argument('--architecture', type=str, default='MIMO',
                         help="model name")
     parser.add_argument('--enc_dim', type=int, default=64)
     parser.add_argument('--feature_dim', type=int, default=64)
