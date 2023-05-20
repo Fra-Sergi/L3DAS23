@@ -465,9 +465,9 @@ class MIMO(nn.Module):
                  hop_size=128,
                  N=512,
                  C=4,
-                 # L=4,
+                 L=4,
                  H=4,
-                 # K=250,
+                 K=250,
                  Global_B=2,
                  Local_B=4,
                  input_channel=4,  # the channel number of input audio
