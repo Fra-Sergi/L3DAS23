@@ -469,8 +469,8 @@ class MIMO(nn.Module):
                  H=4,
                  K=250,
                  Global_B=2,
-                 Local_B=4,
-                 input_channel=4,  # the channel number of input audio
+                 Local_B=4
+                 #input_channel=4,  # the channel number of input audio
                  # unet_channel=[32,32,32,64,64,96,96,96,128,256],
                  # kernel_size=[(7,1),(1,7),(8,6),(7,6),(6,5),(5,5),(6,3),(5,3),(6,3),(5,3)],
                  # stride=[(1,1),(1,1),(2,2),(1,1),(2,2),(1,1),(2,2),(1,1),(2,1),(1,1)]
