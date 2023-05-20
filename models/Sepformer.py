@@ -464,7 +464,7 @@ class MIMO(nn.Module):
                  fft_size=512,
                  hop_size=128,
                  N=512,
-                 # C=2,
+                 C=4,
                  # L=4,
                  H=4,
                  # K=250,
