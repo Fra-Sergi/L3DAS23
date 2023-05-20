@@ -147,14 +147,14 @@ def main(args):
         model = MIMO_UNet_Beamforming(fft_size=args.fft_size,
                                       hop_size=args.hop_size,
                                       input_channel=args.input_channel)
-    elif args.architecture == 'audiovisual_MIMO_Unet_Beamforming':
-        model = audiovisual_MIMO_UNet_Beamforming(fft_size=args.fft_size,
-                                      hop_size=args.hop_size,
-                                      input_channel=args.input_channel)
     elif args.architecture == 'MIMO':
         model = MIMO(fft_size=args.fft_size,
-                     hop_size=args.hop_size,
-                     input_channel=args.input_channel)
+                                      hop_size=args.hop_size,
+                                      input_channel=args.input_channel)
+    #elif args.architecture == 'MIMO':
+        #model = MIMO(fft_size=args.fft_size,
+                     #hop_size=args.hop_size,
+                     #input_channel=args.input_channel)
     if args.use_cuda:
         print("Moving model to gpu")
     model = model.to(device)
