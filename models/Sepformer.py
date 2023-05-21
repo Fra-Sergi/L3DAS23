@@ -258,7 +258,7 @@ class Separator(nn.Module):
         # self.output_gate = nn.Sequential(nn.Conv1d(N, N, 1), nn.Sigmoid())
 
     def forward(self, x):
-
+        print(x.shape)
         # Norm + Linear
         # x = self.LayerNorm(x.permute(0, 2, 1).contiguous())  # [B, C, L] => [B, L, C]
         # x = self.Linear1(x).permute(0, 2, 1).contiguous()  # [B, L, C] => [B, C, L]
