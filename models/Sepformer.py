@@ -624,6 +624,7 @@ class MIMO(nn.Module):
         features = torch.cat((real_features, imag_features), 2)
 
         out = features
+        print(out.shape)
         masks = self.separator(out)
         # encoder_out = []
         # for idx, layer in enumerate(self.encoder):
