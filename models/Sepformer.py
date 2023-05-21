@@ -624,7 +624,7 @@ class MIMO(nn.Module):
 
         out = features
         out1 = torch.unsqueeze(out, 2)
-        out2 = out1.view(B * 4, 1, 512, 600)
+        out2 = out1.view(6 * 4, 1, 512, 600)
         print("shape pre mask: ", out.shape)
         masks = self.separator(out2)
         # encoder_out = []
