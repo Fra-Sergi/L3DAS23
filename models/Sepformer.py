@@ -237,7 +237,7 @@ class Separator(nn.Module):
 
         super(Separator, self).__init__()
 
-        # self.N = N
+        self.N = N
         # self.C = C
         # self.K = K
         self.Global_B = Global_B  # 全局循环次数
@@ -470,10 +470,6 @@ class MIMO(nn.Module):
                  K=250,
                  Global_B=2,
                  Local_B=4
-                 #input_channel=4,  # the channel number of input audio
-                 # unet_channel=[32,32,32,64,64,96,96,96,128,256],
-                 # kernel_size=[(7,1),(1,7),(8,6),(7,6),(6,5),(5,5),(6,3),(5,3),(6,3),(5,3)],
-                 # stride=[(1,1),(1,1),(2,2),(1,1),(2,2),(1,1),(2,2),(1,1),(2,1),(1,1)]
                  ):
         super(MIMO, self).__init__()
         self.fft_size = fft_size
