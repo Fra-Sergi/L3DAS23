@@ -258,7 +258,7 @@ class Separator(nn.Module):
         # self.output_gate = nn.Sequential(nn.Conv1d(N, N, 1), nn.Sigmoid())
 
     def forward(self, x):
-        print(x.shape)
+        print("shape in patch:", x.shape)
         # Norm + Linear
         # x = self.LayerNorm(x.permute(0, 2, 1).contiguous())  # [B, C, L] => [B, L, C]
         # x = self.Linear1(x).permute(0, 2, 1).contiguous()  # [B, L, C] => [B, C, L]
@@ -624,7 +624,7 @@ class MIMO(nn.Module):
         features = torch.cat((real_features, imag_features), 2)
 
         out = features
-        print(out.shape)
+        print("shape pre mask: ", out.shape)
         masks = self.separator(out)
         # encoder_out = []
         # for idx, layer in enumerate(self.encoder):
