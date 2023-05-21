@@ -484,7 +484,7 @@ class MIMO(nn.Module):
         self.K = K  # Number of repeats
         self.Global_B = Global_B  # 全局循环次数
         self.Local_B = Local_B  # 局部循环次数
-        self.separator = Separator(self.H, self.Global_B, self.Local_B)
+        self.separator = Separator(self.N, self.H, self.Global_B, self.Local_B)
 
         # layer_number = len(unet_channel)
         # kernel_number = len(kernel_size)
