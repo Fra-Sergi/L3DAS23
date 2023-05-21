@@ -150,13 +150,13 @@ class Positional_Encoding(nn.Module):
         self.register_buffer('pe', pe)
 
     def forward(self, x):
-        print("pos_ecn: ", x.shape)
         x = x.permute(0, 2, 1).contiguous()
 
         # x is seq_len, batch, channels
         # x = x + self.pe[:x.size(0), :]
 
         # x is batch, channels, seq_len
+        print("pos_ecn: ", x.shape)
         x = x + self.pe[:, :, :x.size(2)]
 
         x = self.dropout(x)
