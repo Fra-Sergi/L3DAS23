@@ -201,6 +201,7 @@ class DPTBlock(nn.Module):
         print("in_trasf: ",z.shape)
         # interchannel DPT
         prova_z = z.permute(2, 3, 0, 1).contiguous().view(K * P, B, N)
+        print("in_trasf2: ", prova_z.shape)
         prova_z1 = self.channel_PositionalEncoding(prova_z)
 
         for i in range(self.Local_B):
