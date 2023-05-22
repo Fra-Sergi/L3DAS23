@@ -198,7 +198,7 @@ class DPTBlock(nn.Module):
     def forward(self, z):
 
         B, N, K, P = z.shape
-
+        print("in_trasf: ",z.shape)
         # interchannel DPT
         prova_z = z.permute(2, 3, 0, 1).contiguous().view(K * P, B, N)
         prova_z1 = self.channel_PositionalEncoding(prova_z)
