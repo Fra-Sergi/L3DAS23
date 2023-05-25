@@ -196,9 +196,11 @@ class DPTBlock(nn.Module):
                                                                   dropout=0.1))
 
     def forward(self, z):
-
-        B, N, K, P = z.shape
-        print("in_trasf: ",z.shape)
+        m = nn.Linear(74, 74 * 16)
+        z = m(y)
+        z = z.view(6, 4, 512, 16, 74)
+        A, B, N, K, P = z.shape
+        print("in_trasf: ", z.shape)
         # interchannel DPT
         prova_z = z.permute(2, 3, 0, 1).contiguous().view(K * P, B, N)
         print("in_trasf2: ", prova_z.shape)
