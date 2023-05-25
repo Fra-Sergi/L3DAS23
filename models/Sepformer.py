@@ -197,7 +197,7 @@ class DPTBlock(nn.Module):
 
     def forward(self, z):
         m = nn.Linear(74, 74 * 16)
-        z = m(y)
+        z = m(z)
         z = z.view(6, 4, 512, 16, 74)
         A, B, N, K, P = z.shape
         print("in_trasf: ", z.shape)
