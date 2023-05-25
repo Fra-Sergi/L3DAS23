@@ -173,7 +173,7 @@ class DPTBlock(nn.Module):
         super(DPTBlock, self).__init__()
 
         self.Local_B = Local_B
-        self.LinearLayer = nn.Linear()
+        self.LinearLayer = nn.Linear(74, 74 * 16)
         self.channel_PositionalEncoding = Positional_Encoding(d_model=input_size, max_len=32000)
         self.channel_transformer = nn.ModuleList([])
         for i in range(self.Local_B):
