@@ -75,7 +75,7 @@ class PatchEmbedding(nn.Module):
 
     def forward(self, X):
         # output shape: (batch size, no. of patches, no. of channels)
-        return self.conv(X).transpose(1, 2).view(6, 4, 512, 74)
+        return self.conv(X).transpose(1, 2).view(1, 4, 512, 74)
 
 
 class TransformerEncoderLayer(Module):
@@ -197,7 +197,7 @@ class DPTBlock(nn.Module):
 
     def forward(self, z):
         z = self.Linear(z)
-        z = z.view(6, 4, 512, 16, 74)
+        z = z.view(1, 4, 512, 16, 74)
         A, B, N, K, P = z.shape
         print("in_trasf: ", z.shape)
         # interchannel DPT
@@ -627,7 +627,7 @@ class MIMO(nn.Module):
 
         out = features
         out1 = torch.unsqueeze(out, 2)
-        out2 = out1.view(6 * 4, 1, 512, 600)
+        out2 = out1.view(1 * 4, 1, 512, 600)
         print("shape pre mask: ", out.shape)
         masks = self.separator(out2)
         # encoder_out = []
@@ -686,7 +686,7 @@ if __name__ == '__main__':
     frames_num = 600
     fft_size = 512
     hop_size = 128
-    batch_size = 6
+    batch_size = 1
     audio_channel = 4
     length = int((frames_num - 1) * hop_size + fft_size - 4 * hop_size)  # 4.792 seconds
     inputs = torch.rand(batch_size, audio_channel, length)
