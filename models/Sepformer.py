@@ -212,24 +212,24 @@ class DPTBlock(nn.Module):
         prova_output = prova_f.view(A, K, P, B, N).permute(0, 3, 4, 1, 2).contiguous()
 
         # intra DPT
-        row_z = prova_output.permute(0, 3, 2, 1).contiguous().view(B * P, K, N)
+        row_z = prova_output.permute(0, 1, 4, 3, 2).contiguous().view(A * B * P, K, N)
         row_z1 = self.intra_PositionalEncoding(row_z)
 
         for i in range(self.Local_B):
             row_z1 = self.intra_transformer[i](row_z1.permute(1, 0, 2).contiguous()).permute(1, 0, 2).contiguous()
 
         row_f = row_z1 + row_z
-        row_output = row_f.view(B, P, K, N).permute(0, 3, 2, 1).contiguous()
+        row_output = row_f.view(A, B, P, K, N).permute(0, 1, 4, 3, 2).contiguous()
 
         # inter DPT
-        col_z = row_output.permute(0, 2, 3, 1).contiguous().view(B * K, P, N)
+        col_z = row_output.permute(0, 1, 3, 4, 2).contiguous().view(A * B * K, P, N)
         col_z1 = self.inter_PositionalEncoding(col_z)
 
         for i in range(self.Local_B):
             col_z1 = self.inter_transformer[i](col_z1.permute(1, 0, 2).contiguous()).permute(1, 0, 2).contiguous()
 
         col_f = col_z1 + col_z
-        col_output = col_f.view(B, K, P, N).permute(0, 3, 1, 2).contiguous()
+        col_output = col_f.view(A, B, K, P, N).permute(0, 1, 4, 2, 3).contiguous()
 
         return col_output
 
