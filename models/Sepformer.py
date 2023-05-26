@@ -667,7 +667,7 @@ class MIMO(nn.Module):
         est_speech_stft = torch.sum(est_speech_stft, 1)
         batch_size, frequency, frame = est_speech_stft.size()
         est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
-
+        print("est_speech: ", est_speech_stft.shape)
         # shape: [B, S]
         est_speech = torch.istft(
             est_speech_stft,
