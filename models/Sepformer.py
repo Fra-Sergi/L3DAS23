@@ -655,14 +655,14 @@ class MIMO(nn.Module):
         # shape: [B, C, F*2, T]
         # out = out.permute(0,1,3,2)
 
-        # real_mask = out[:,:,:self.valid_freq,:]
-        # imag_mask = out[:,:,self.valid_freq:,:]
+        real_mask = masks[:,:,:self.valid_freq,:]
+        imag_mask = masks[:,:,self.valid_freq:,:]
 
-        # est_speech_real = torch.mul(real_features, real_mask) - torch.mul(imag_features, imag_mask)
-        # est_speech_imag = torch.mul(real_features, imag_mask) + torch.mul(imag_features, real_mask)
-        # est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
+        est_speech_real = torch.mul(real_features, real_mask) - torch.mul(imag_features, imag_mask)
+        est_speech_imag = torch.mul(real_features, imag_mask) + torch.mul(imag_features, real_mask)
+        est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
 
-        est_speech_stft = torch.mul(out, masks)
+        #est_speech_stft = torch.mul(out, masks)
         print("est_speech: ", est_speech_stft.shape)
         # shape: [B, C, F, T]
         est_speech_stft = torch.sum(est_speech_stft, 1)
