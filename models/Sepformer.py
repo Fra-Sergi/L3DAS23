@@ -209,7 +209,7 @@ class DPTBlock(nn.Module):
             prova_z1 = self.channel_transformer[i](prova_z1.permute(1, 0, 2).contiguous()).permute(1, 0, 2).contiguous()
 
         prova_f = prova_z1 + prova_z
-        prova_output = prova_f.view(K, P, B, N).permute(2, 3, 0, 1).contiguous()
+        prova_output = prova_f.view(A, K, P, B, N).permute(0, 3, 4, 1, 2).contiguous()
 
         # intra DPT
         row_z = prova_output.permute(0, 3, 2, 1).contiguous().view(B * P, K, N)
