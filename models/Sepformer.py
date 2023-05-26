@@ -6,7 +6,7 @@ from torch.autograd import Variable
 import math
 import torch.nn.functional as F
 
-
+__debug__ is False
 class Encoder(nn.Module):
 
     def __init__(self, L, N):
@@ -156,7 +156,7 @@ class Positional_Encoding(nn.Module):
         # x = x + self.pe[:x.size(0), :]
 
         # x is batch, channels, seq_len
-        print("pos_ecn: ", x.shape)
+        #print("pos_ecn: ", x.shape)
         x = x + self.pe[:, :, :x.size(2)]
 
         x = self.dropout(x)
