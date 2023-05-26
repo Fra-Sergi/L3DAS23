@@ -173,7 +173,7 @@ class DPTBlock(nn.Module):
         super(DPTBlock, self).__init__()
 
         self.Local_B = Local_B
-        self.Linear = nn.Linear(74, 74 * 16)
+
         self.channel_PositionalEncoding = Positional_Encoding(d_model=input_size, max_len=32000)
         self.channel_transformer = nn.ModuleList([])
         for i in range(self.Local_B):
@@ -196,8 +196,7 @@ class DPTBlock(nn.Module):
                                                                   dropout=0.1))
 
     def forward(self, z):
-        z = self.Linear(z)
-        z = z.view(1, 4, 512, 16, 74)
+
         A, B, N, K, P = z.shape
         print("in_trasf: ", z.shape)
         # interchannel DPT
@@ -243,6 +242,7 @@ class Separator(nn.Module):
         self.N = N
         # self.C = C
         # self.K = K
+        self.Linear = nn.Linear(74, 74 * 16)
         self.Global_B = Global_B  # 全局循环次数
         self.Local_B = Local_B  # 局部循环次数
 
@@ -268,6 +268,8 @@ class Separator(nn.Module):
         # Chunking
         # out, gap = self.split_feature(x, self.K)  # [B, C, L] => [B, C, K, S]
         out = self.patchEmbedding(x)  # [B, 4, 512, 600] => [B, 4, 512, 74]
+        out = self.Linear(out)
+        out = out.view(1, 4, 512, 16, 74)
         # SepFormer
         for i in range(self.Global_B):
             out = self.SepFormer[i](out)  # [B, C, K, S]
