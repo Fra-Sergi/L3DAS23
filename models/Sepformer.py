@@ -632,6 +632,7 @@ class MIMO(nn.Module):
         out2 = out1.view(1 * 4, 1, 512, 600)
         print("shape pre mask: ", out.shape)
         masks = self.separator(out2)
+        print("mask_out: ", masks.shape)
         # encoder_out = []
         # for idx, layer in enumerate(self.encoder):
         #    out = self.encode_padding_same(out, self.kernel[idx])
