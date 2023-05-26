@@ -489,7 +489,7 @@ class MIMO(nn.Module):
         self.Global_B = Global_B  # 全局循环次数
         self.Local_B = Local_B  # 局部循环次数
         self.separator = Separator(self.N, self.H, self.Global_B, self.Local_B)
-
+        self.linear = nn.Linear(74*16, 600)
         # layer_number = len(unet_channel)
         # kernel_number = len(kernel_size)
         # stride_number = len(stride)
@@ -632,7 +632,9 @@ class MIMO(nn.Module):
         out2 = out1.view(1 * 4, 1, 512, 600)
         print("shape pre mask: ", out.shape)
         masks = self.separator(out2)
-        print("mask_out: ", masks.shape)
+        masks = masks.view(1, 4, 512, 16 * 74)
+        masks = self.linear(masks)
+        #print("mask_out: ", masks.shape)
         # encoder_out = []
         # for idx, layer in enumerate(self.encoder):
         #    out = self.encode_padding_same(out, self.kernel[idx])
