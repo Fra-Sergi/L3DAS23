@@ -281,9 +281,9 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     #saving parameters
-    parser.add_argument('--results_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/RESULTS/Task1',
+    parser.add_argument('--results_path', type=str, default='RESULTS/Task1',
                         help='Folder to write results dicts into')
-    parser.add_argument('--checkpoint_dir', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/RESULTS/Task1',
+    parser.add_argument('--checkpoint_dir', type=str, default='RESULTS/Task1',
                         help='Folder to write checkpoints into')
     parser.add_argument('--path_images', type=str, default=None,
                         help="Path to the folder containing all images of Task1. None when using the audio-only version")
@@ -292,12 +292,12 @@ if __name__ == '__main__':
     parser.add_argument('--path_csv_images_test', type=str, default='DATASETS/Task1/L3DAS23_Task1_dev/audio_image.csv',
                         help="Path to the CSV file for the couples (name_audio, name_photo)")
     #dataset parameters
-    parser.add_argument('--training_predictors_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_predictors_train.pkl')
-    parser.add_argument('--training_target_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_target_train.pkl')
-    parser.add_argument('--validation_predictors_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_predictors_validation.pkl')
-    parser.add_argument('--validation_target_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_target_validation.pkl')
-    parser.add_argument('--test_predictors_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_predictors_test.pkl')
-    parser.add_argument('--test_target_path', type=str, default='/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/processed/task1_target_test.pkl')
+    parser.add_argument('--training_predictors_path', type=str, default='DATASETS/processed/task1_predictors_train.pkl')
+    parser.add_argument('--training_target_path', type=str, default='DATASETS/processed/task1_target_train.pkl')
+    parser.add_argument('--validation_predictors_path', type=str, default='DATASETS/processed/task1_predictors_validation.pkl')
+    parser.add_argument('--validation_target_path', type=str, default='DATASETS/processed/task1_target_validation.pkl')
+    parser.add_argument('--test_predictors_path', type=str, default='DATASETS/processed/task1_predictors_test.pkl')
+    parser.add_argument('--test_target_path', type=str, default='DATASETS/processed/task1_target_test.pkl')
     #training parameters
     # Modificato LR a 0.0005 (da 0.001) e batchsize raddoppiata a 12
     parser.add_argument('--gpu_id', type=int, default=0)
