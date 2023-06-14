@@ -6,7 +6,6 @@ from torch.autograd import Variable
 import math
 import torch.nn.functional as F
 
-__debug__ is False
 class Encoder(nn.Module):
 
     def __init__(self, L, N):
@@ -198,12 +197,12 @@ class DPTBlock(nn.Module):
     def forward(self, z):
 
         A, B, N, K, P = z.shape
-        if __debug__:
-            print("in_trasf: ", z.shape)
+        #if __debug__:
+            #print("in_trasf: ", z.shape)
         # interchannel DPT
         prova_z = z.permute(0, 3, 4, 1, 2).contiguous().view(A * K * P, B, N)
-        if __debug__:
-            print("in_trasf2: ", prova_z.shape)
+        #if __debug__:
+         #   print("in_trasf2: ", prova_z.shape)
         prova_z1 = self.channel_PositionalEncoding(prova_z)
 
         for i in range(self.Local_B):
@@ -632,13 +631,13 @@ class MIMO(nn.Module):
         out = features
         out1 = torch.unsqueeze(out, 2)
         out2 = out1.view(1 * 4, 1, 512, 600)
-        if __debug__:
-            print("shape pre mask: ", out.shape)
+        #if __debug__:
+         #   print("shape pre mask: ", out.shape)
         masks = self.separator(out2)
         masks = masks.view(1, 4, 512, 16 * 74)
         masks = self.linear(masks)
-        if __debug__:
-            print("mask_out: ", masks.shape)
+        #if __debug__:
+            #print("mask_out: ", masks.shape)
         # encoder_out = []
         # for idx, layer in enumerate(self.encoder):
         #    out = self.encode_padding_same(out, self.kernel[idx])
@@ -667,8 +666,8 @@ class MIMO(nn.Module):
         est_speech_stft = torch.complex(est_speech_real, est_speech_imag)
 
         #est_speech_stft = torch.mul(out, masks)
-        if __debug__:
-            print("est_speech: ", est_speech_stft.shape)
+        #if __debug__:
+         #   print("est_speech: ", est_speech_stft.shape)
         # shape: [B, C, F, T]
         est_speech_stft = torch.sum(est_speech_stft, 1)
         batch_size, frequency, frame = est_speech_stft.size()
