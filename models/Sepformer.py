@@ -473,8 +473,8 @@ class MIMO(nn.Module):
                  L=4,
                  H=4,
                  K=250,
-                 Global_B=2,
-                 Local_B=4
+                 Global_B=3,
+                 Local_B=5
                  ):
         super(MIMO, self).__init__()
         self.fft_size = fft_size
