@@ -353,7 +353,7 @@ class Sepformer(nn.Module):
             R: Number of repeats
     """
 
-    def __init__(self, N=64, C=2, L=4, H=4, K=250, Global_B=2, Local_B=4):
+    def __init__(self, N=64, C=2, L=4, H=4, K=250, Global_B=3, Local_B=5):
 
         super(Sepformer, self).__init__()
 
