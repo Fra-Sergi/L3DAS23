@@ -334,7 +334,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_cuda', type=str, default='True')
     parser.add_argument('--use_mps', type=bool, default='False')
     parser.add_argument('--early_stopping', type=str, default='True')
-    parser.add_argument('--fixed_seed', type=str, default='False')
+    parser.add_argument('--fixed_seed', type=str, default='True')
     parser.add_argument('--load_model', type=str, default=None,
                         help='Reload a previously trained model (whole task model)')
     parser.add_argument('--lr', type=float, default=0.0005)
