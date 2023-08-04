@@ -314,6 +314,8 @@ if __name__ == '__main__':
                         help='Folder to write results dicts into')
     parser.add_argument('--checkpoint_dir', type=str, default=mnt_path + 'RESULTS/Task1',
                         help='Folder to write checkpoints into')
+    parser.add_argument('--checkpoint_epoca_dir', type=str, default=mnt_path + 'RESULTS/Task1',
+                        help='Folder to write epochs checkpoints into')
     parser.add_argument('--path_images', type=str, default=None,
                         help="Path to the folder containing all images of Task1. None when using the audio-only version")
     parser.add_argument('--path_csv_images_train', type=str,
