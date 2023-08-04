@@ -256,9 +256,14 @@ def main(args):
             # checkpoint_name = ('%03d' % epoch) + '_' + ('%.6f' % valid_loss) + '.pth'
             # checkpoint_path = os.path.join(args.checkpoint_dir, checkpoint_name)
             checkpoint_path = os.path.join(args.checkpoint_dir, "checkpoint")
+            checkpoint_epoca_path = os.path.join(args.checkpoint_epoca_dir, "checkpoint_epoca")
+
 
             if val_loss >= state["best_loss"]:
                 state["worse_epochs"] += 1
+                state["epoca_loss"] = val_loss
+                state["epoca_checkpoint"] = checkpoint_epoca_path
+                save_model(model, optimizer, state, checkpoint_epoca_path)
             else:
                 print("MODEL IMPROVED ON VALIDATION SET!")
                 state["worse_epochs"] = 0
