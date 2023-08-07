@@ -136,11 +136,11 @@ def main(args):
     # test_dataset = CustomAudioVisualDataset((test_audio_predictors,test_img_predictors), test_target, args.path_images, args.path_csv_images_test, transform)
 
     # Utilizziamo il nuovo custom dataset Light
-    tr_dataset = CustomLightAudioDataset('L3DAS23_Task1_train100360', '/home/christian/Documents', num_mics=1,
+    tr_dataset = CustomLightAudioDataset('L3DAS22_Task1_train100', '/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/Task1/', num_mics=1,
                                          train_val_split=0.7, training=True, transform=transform)
-    val_dataset = CustomLightAudioDataset('L3DAS23_Task1_train100360', '/home/christian/Documents', num_mics=1,
+    val_dataset = CustomLightAudioDataset('L3DAS22_Task1_train100', '/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/Task1/', num_mics=1,
                                           train_val_split=0.7, transform=transform)
-    test_dataset = CustomLightAudioDataset('L3DAS23_Task1_dev', '/mnt/media/christian/AmbiSE/DATASETS/Task1/',
+    test_dataset = CustomLightAudioDataset('L3DAS22_Task1_dev', '/content/gdrive/MyDrive/project_folder/L3DAS23/DATASETS/Task1/',
                                            num_mics=1, test=True, transform=transform)
 
     # build data loader from dataset
@@ -308,7 +308,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    mnt_path = '/mnt/media/christian/AmbiSE/'
+    mnt_path = '/content/gdrive/MyDrive/project_folder/L3DAS23/'
     # saving parameters
     parser.add_argument('--results_path', type=str, default=mnt_path + 'RESULTS/Task1',
                         help='Folder to write results dicts into')
