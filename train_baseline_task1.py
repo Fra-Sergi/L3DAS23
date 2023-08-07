@@ -374,7 +374,7 @@ if __name__ == '__main__':
     if WANDB:
         wandb.init(
             # set the wandb project where this run will be logged
-            entity='thesis-i2i',
+            #entity='thesis-i2i',
             project="AmbiSE",
             name="different_chunking",
             # track hyperparameters and run metadata
