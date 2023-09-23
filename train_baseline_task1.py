@@ -263,6 +263,7 @@ def main(args):
                 state["worse_epochs"] += 1
                 state["epoca_loss"] = val_loss
                 state["epoca_checkpoint"] = checkpoint_epoca_path
+                print("Saving not the best model...")
                 save_model(model, optimizer, state, checkpoint_epoca_path)
             else:
                 print("MODEL IMPROVED ON VALIDATION SET!")
