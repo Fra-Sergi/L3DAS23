@@ -376,13 +376,13 @@ if __name__ == '__main__':
         wandb.init(
             # set the wandb project where this run will be logged
             #entity='thesis-i2i',
-            project="U-Net",
-            name="baseline",
+            project="Ambisep",
+            name="prova1",
             # track hyperparameters and run metadata
             config={
                 "learning_rate": args.lr,
                 "architecture": args.architecture,
-                "dataset": "L3DAS22",
+                "dataset": "L3DAS23",
                 "batch_size": args.batch_size,
                 "patience": args.patience,
                 "loss": args.loss,
