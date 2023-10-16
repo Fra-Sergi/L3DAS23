@@ -376,8 +376,8 @@ if __name__ == '__main__':
         wandb.init(
             # set the wandb project where this run will be logged
             #entity='thesis-i2i',
-            project="Ambisep",
-            name="prova1",
+            project="U-Net",
+            name="baseline",
             # track hyperparameters and run metadata
             config={
                 "learning_rate": args.lr,
