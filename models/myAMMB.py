@@ -248,7 +248,7 @@ class AMMB(nn.Module):
         # x_c = x_c.transpose(-1, -2).view(x.shape[0], x.shape[1], x_c.shape[1], x_c.shape[3], 1)  # [B, Ch, NBin, NC, 1]
         x_c = x_c.view(x.shape[0], x.shape[1], x_c.shape[1], x_c.shape[3], x_c.shape[2])
         # x_c = self.extend_chunking(x_c).transpose(-1, -2)     # [B, Ch, NBin, C, NC]
-        # print(x_c.shape)
+        print(x_c.shape) if DEBUG else None
 
         # AmbiMiMo
         for i in range(self.global_B):
