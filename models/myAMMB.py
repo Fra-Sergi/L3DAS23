@@ -256,11 +256,11 @@ class AMMB(nn.Module):
 
         # print(x_c.shape)
 
-        print(x_mimo.shape) if DEBUG else None
+        print(f"x_mimo {x_mimo.shape}") if DEBUG else None
         x_mimo = x_mimo.view(x_mimo.shape[0], x_mimo.shape[1], x_mimo.shape[2], x_mimo.shape[3] * x_mimo.shape[4])
         x_mimo = self.out(x_mimo)
 
-        print(x_mimo.shape) if DEBUG else None
+        print(f"x_mimo {x_mimo.shape}") if DEBUG else None
 
         real_mask = x_mimo[:, :, :self.valid_freq, :]
         imag_mask = x_mimo[:, :, self.valid_freq:, :]
@@ -274,7 +274,7 @@ class AMMB(nn.Module):
         batch_size, frequency, frame = est_speech_stft.size()
         est_speech_stft = torch.cat((est_speech_stft, torch.zeros(batch_size, 1, frame).to(device)), 1)
 
-        print(est_speech_stft.shape) if DEBUG else None
+        print(f"est_speech_stft {est_speech_stft.shape}") if DEBUG else None
 
         # shape: [B, S]
         est_speech = torch.istft(
@@ -284,7 +284,7 @@ class AMMB(nn.Module):
             self.win_size,
             torch.hann_window(self.win_size).to(device))
         # shape: [B, 1, S]
-
+        print(f"est_speech {est_speech.shape}") if DEBUG else None
         return est_speech.view(1, -1, est_speech.shape[-1])
 
 
