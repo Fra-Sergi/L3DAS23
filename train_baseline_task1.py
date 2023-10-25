@@ -270,10 +270,12 @@ def main(args):
                 state["worse_epochs"] = 0
                 state["best_loss"] = val_loss
                 state["best_checkpoint"] = checkpoint_path
+                state["epoca_checkpoint"] = checkpoint_epoca_path
 
                 # CHECKPOINT
                 print("Saving model...")
                 save_model(model, optimizer, state, checkpoint_path)
+                save_model(model, optimizer, state, checkpoint_epoca_path)
 
             state["epochs"] += 1
             # state["worse_epochs"] = 200

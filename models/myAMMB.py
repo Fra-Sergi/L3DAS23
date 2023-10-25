@@ -115,7 +115,7 @@ class AmbiMiMo(nn.Module):
         x_intraChu = x_intraChu + self.intraChuPE(x_intraChu)
         print(x_intraChu.shape) if DEBUG else None
         for i in range(self.num_encoders):
-            x_intraCha = self.intrachunk_block[i](x_intraChu)
+            x_intraChu = self.intrachunk_block[i](x_intraChu)
         print(x_intraChu.shape) if DEBUG else None
 
         x_intraChu = x_intraChu.view(B, Ch, NC, C, NBin)
