@@ -7,7 +7,7 @@ import math
 
 from torch.autograd import Variable
 
-DEBUG = False
+DEBUG = True
 
 
 # Transformer Encoder
