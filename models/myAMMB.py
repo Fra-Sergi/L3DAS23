@@ -7,7 +7,7 @@ import math
 
 from torch.autograd import Variable
 
-DEBUG = False
+DEBUG = True
 
 
 # Transformer Encoder
@@ -115,7 +115,7 @@ class AmbiMiMo(nn.Module):
         x_intraChu = x_intraChu + self.intraChuPE(x_intraChu)
         print(x_intraChu.shape) if DEBUG else None
         for i in range(self.num_encoders):
-            x_intraCha = self.intrachunk_block[i](x_intraChu)
+            x_intraChu = self.intrachunk_block[i](x_intraChu)
         print(x_intraChu.shape) if DEBUG else None
 
         x_intraChu = x_intraChu.view(B, Ch, NC, C, NBin)
@@ -246,7 +246,7 @@ class AMMB(nn.Module):
         # x_c = x_c.view(x.shape[0], 4, self.dim_chunk, x_c.shape[-2], 1)
 
         # x_c = x_c.transpose(-1, -2).view(x.shape[0], x.shape[1], x_c.shape[1], x_c.shape[3], 1)  # [B, Ch, NBin, NC, 1]
-        x_c = x_c.view(x.shape[0], x.shape[1], x_c.shape[1], x_c.shape[3], x_c.shape[2])
+        x_c = x_c.view(x.shape[0], x.shape[1], x_c.shape[1], x_c.shape[2], x_c.shape[3])
         # x_c = self.extend_chunking(x_c).transpose(-1, -2)     # [B, Ch, NBin, C, NC]
         print(x_c.shape) if DEBUG else None
 
