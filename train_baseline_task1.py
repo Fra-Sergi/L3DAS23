@@ -170,7 +170,7 @@ def main(args):
                                                   hop_size=args.hop_size,
                                                   input_channel=args.input_channel)
     elif args.architecture == 'AMMB':
-        model = AMMB(4, 512, 2, 2, 4, 512, 128, 512, 0.1, 'cuda')
+        model = AMMB(4, 512, 3, 2, 4, 512, 128, 512, 0.1, 'cuda')
         # num_heads, embed_dim, num_encoders, global_B, channel_dim, fft_size, hop_size, win_size, dropout, device
     if args.use_cuda:
         print("Moving model to gpu")
