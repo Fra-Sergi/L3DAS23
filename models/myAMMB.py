@@ -238,9 +238,10 @@ class AMMB(nn.Module):
 
         print(x_stft.shape) if DEBUG else None
         # Chunking
-        x_c = x_stft.unsqueeze(2).view(-1, 1, x_stft.shape[2], x_stft.shape[3])  # [B*Ch, 1, NBin, TF]
+        #x_c = x_stft.unsqueeze(2).view(-1, 1, x_stft.shape[2], x_stft.shape[3])  # [B*Ch, 1, NBin, TF]
+        x_c = x_stft.unsqueeze(2).view(-1, x_stft.shape[2], x_stft.shape[3])
         x_c = self.chunking(x_c) # [B*Ch, NBin, C, NC]
-        #x_c = x_stft.unsqueeze(2).view(-1, x_stft.shape[2], x_stft.shape[3])
+
         #x_c, gap = self.split_feature(x_c, 16)
 
         # x_c = x_c.view(x.shape[0], 4, self.dim_chunk, x_c.shape[-2], 1)
