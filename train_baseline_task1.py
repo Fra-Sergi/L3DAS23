@@ -170,7 +170,7 @@ def main(args):
                                                   hop_size=args.hop_size,
                                                   input_channel=args.input_channel)
     elif args.architecture == 'AMMB':
-        model = AMMB(4, 512, 3, 3, 4, 512, 128, 512, 0.1, 'cuda')
+        model = AMMB(4, 512, 1, 1, 4, 512, 128, 512, 0.1, 'cuda')
         # num_heads, embed_dim, num_encoders, global_B, channel_dim, fft_size, hop_size, win_size, dropout, device
     if args.use_cuda:
         print("Moving model to gpu")
@@ -378,7 +378,7 @@ if __name__ == '__main__':
         wandb.init(
             # set the wandb project where this run will be logged
             #entity='thesis-i2i',
-            project="AmbiSE_different_dim_3_enc_globalB",
+            project="AmbiSE_different_dim_1_enc_globalB",
             name="myAMMB",
             # track hyperparameters and run metadata
             config={
