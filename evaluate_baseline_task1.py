@@ -15,6 +15,7 @@ from custom_dataset import CustomAudioVisualDataset
 from metrics import task1_metric
 from models.FaSNet import FaSNet_origin, FaSNet_TAC
 from models.MMUB import MIMO_UNet_Beamforming, audiovisual_MIMO_UNet_Beamforming
+from models.myAMMB import AMMB
 from utility_functions import load_model, save_model
 
 '''
@@ -144,6 +145,9 @@ def main(args):
         model = audiovisual_MIMO_UNet_Beamforming(fft_size=args.fft_size,
                                       hop_size=args.hop_size,
                                       input_channel=args.input_channel)
+    elif args.architecture == 'AMMB':
+        model = AMMB(4, 512, 2, 2, 4, 512, 128, 512, 0.1, 'cuda')
+        # num_heads, embed_dim, num_encoders, global_B, channel_dim, fft_size, hop_size, win_size, dropout, device
     if args.use_cuda:
         print("Moving model to gpu")
     model = model.to(device)
@@ -227,7 +231,7 @@ if __name__ == '__main__':
     parser.add_argument('--segment_length', type=int, default=76672)
     parser.add_argument('--segment_overlap', type=float, default=0.5)
     #model parameters
-    parser.add_argument('--architecture', type=str, default='MIMO_UNet_Beamforming',
+    parser.add_argument('--architecture', type=str, default='AMMB',
                         help="model name")
     parser.add_argument('--gpu_id', type=int, default=0)
     parser.add_argument('--use_cuda', type=str, default='True')
