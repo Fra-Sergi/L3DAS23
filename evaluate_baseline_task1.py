@@ -234,7 +234,7 @@ if __name__ == '__main__':
     parser.add_argument('--architecture', type=str, default='AMMB',
                         help="model name")
     parser.add_argument('--gpu_id', type=int, default=0)
-    parser.add_argument('--use_cuda', type=str, default='True')
+    parser.add_argument('--use_cuda', type=str, default='False')
     parser.add_argument('--enc_dim', type=int, default=64)
     parser.add_argument('--feature_dim', type=int, default=64)
     parser.add_argument('--hidden_dim', type=int, default=128)
