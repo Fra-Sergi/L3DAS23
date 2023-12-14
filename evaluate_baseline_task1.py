@@ -218,7 +218,7 @@ if __name__ == '__main__':
     #i/o parameters
     parser.add_argument('--model_path', type=str, default='RESULTS/Task1/checkpoint')
     parser.add_argument('--results_path', type=str, default='RESULTS/Task1/metrics')
-    parser.add_argument('--save_sounds_freq', type=int, default=None)
+    parser.add_argument('--save_sounds_freq', type=int, default=True)
     parser.add_argument('--path_images', type=str, default=None,
                         help="Path to the folder containing all images of Task1. None when using the audio only version")
     parser.add_argument('--path_csv_images', type=str, default='DATASETS/Task1/L3DAS23_Task1_dev/audio_image.csv',
