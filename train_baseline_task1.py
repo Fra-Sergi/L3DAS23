@@ -378,7 +378,7 @@ if __name__ == '__main__':
         wandb.init(
             # set the wandb project where this run will be logged
             #entity='thesis-i2i',
-            project="AmbiSE_different_dim_3encGB_L2",
+            project="Fasnet",
             name="myAMMB",
             # track hyperparameters and run metadata
             config={
