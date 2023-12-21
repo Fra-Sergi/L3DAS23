@@ -15,7 +15,7 @@ class MIMO_UNet_Beamforming(nn.Module):
                 fft_size=512,
                 hop_size=128,
                 input_channel=4, # the channel number of input audio
-                unet_channel=[96,96,96,128,128,256,256,256,512,1024],
+                unet_channel=[32,32,32,64,64,96,96,96,128,256],
                 kernel_size=[(7,1),(1,7),(8,6),(7,6),(6,5),(5,5),(6,3),(5,3),(6,3),(5,3)],
                 stride=[(1,1),(1,1),(2,2),(1,1),(2,2),(1,1),(2,2),(1,1),(2,1),(1,1)]
                 ):
