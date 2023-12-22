@@ -31,15 +31,15 @@ class TransformerEncoder(nn.Module):
         )
 
     def forward(self, x):
-        x1 = self.LayerNorm1(x)
+        x1 = self.layerNorm1(x)
 
         x2 = self.self_attention(x1, x1, x1, attn_mask=None, key_padding_mask=None)[0]
 
-        x3 = self.Dropout1(x2) + x
+        x3 = self.dropout1(x2) + x
 
-        x4 = self.LayerNorm2(x3)
+        x4 = self.layerNorm2(x3)
 
-        x5 = self.Dropout2(self.FeedForward(x4)) + x3
+        x5 = self.dropout2(self.FFN(x4)) + x3
 
         return x5
 
